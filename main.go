@@ -7,21 +7,23 @@ import (
 	"sync"
 )
 
-type Post struct {
-	Id      int    `json:"id"`
-	Content string `json:"content"`
+type User struct {
+	Id       int64  `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 var (
-	posts   = make(map[int]Post)
+	users   = make(map[int]User)
 	nextId  = 1
-	postsMu sync.Mutex
+	usersMu sync.Mutex
 )
 
 func main() {
 
-	http.HandleFunc("/posts", postsHandler)
-	http.HandleFunc("/posts/", postHandler)
+	http.HandleFunc("/users", usersHandler)
+	http.HandleFunc("/users/", singleUserHandler)
 
 	fmt.Println("Server is listening on port 8080")
 

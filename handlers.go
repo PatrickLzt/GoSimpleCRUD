@@ -5,23 +5,23 @@ import (
 	"strconv"
 )
 
-func postsHandler(w http.ResponseWriter, r *http.Request) {
+func usersHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
-		handleGetPosts(w, r)
+		handleGetUsers(w, r)
 
 	case "POST":
-		handlePostPosts(w, r)
+		handlePostUsers(w, r)
 
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
-func postHandler(w http.ResponseWriter, r *http.Request) {
+func singleUserHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := strconv.Atoi(r.URL.Path[len("/posts/"):])
+	id, err := strconv.Atoi(r.URL.Path[len("/users/"):])
 	if err != nil {
 		http.Error(w, "Invalid post id", http.StatusBadRequest)
 		return
@@ -29,10 +29,10 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
-		handleGetPost(w, r, id)
+		handleSingleGetUser(w, r, id)
 
 	case "DELETE":
-		handleDeletePost(w, r, id)
+		handleDeleteUser(w, r, id)
 
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

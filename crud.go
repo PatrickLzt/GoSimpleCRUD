@@ -8,27 +8,27 @@ import (
 )
 
 // CRUD
-func handleGetPosts(w http.ResponseWriter, r *http.Request) {
+func handleGetUsers(w http.ResponseWriter, r *http.Request) {
 
-	postsMu.Lock()
-	defer postsMu.Unlock()
+	usersMu.Lock()
+	defer usersMu.Unlock()
 
-	ps := make([]Post, 0, len(posts))
+	ps := make([]User, 0, len(users))
 
-	for _, p := range posts {
-		ps = append(ps, p)
+	for _, u := range users {
+		ps = append(ps, u)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ps)
 
-	fmt.Println("GET /posts", ps)
+	fmt.Println("GET /users", ps)
 
 }
 
-func handlePostPosts(w http.ResponseWriter, r *http.Request) {
+func handlePostUsers(w http.ResponseWriter, r *http.Request) {
 
-	var p Post
+	var u User
 
 	body, err := io.ReadAll(r.Body)
 
@@ -37,53 +37,53 @@ func handlePostPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := json.Unmarshal(body, &p); err != nil {
+	if err := json.Unmarshal(body, &u); err != nil {
 		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
 		return
 	}
 
-	postsMu.Lock()
-	defer postsMu.Unlock()
+	usersMu.Lock()
+	defer usersMu.Unlock()
 
-	p.Id = nextId
+	u.Id = int64(nextId)
 	nextId++
-	posts[p.Id] = p
+	users[int(u.Id)] = u
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 
-	fmt.Println("POST /posts", p)
+	fmt.Println("POST /users", u)
 }
 
-func handleGetPost(w http.ResponseWriter, r *http.Request, id int) {
+func handleSingleGetUser(w http.ResponseWriter, r *http.Request, id int) {
 
-	postsMu.Lock()
-	defer postsMu.Unlock()
+	usersMu.Lock()
+	defer usersMu.Unlock()
 
-	p, ok := posts[id]
+	u, ok := users[id]
 	if !ok {
-		http.Error(w, "Post not found", http.StatusNotFound)
+		http.Error(w, "User not found", http.StatusNotFound)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(p)
+	json.NewEncoder(w).Encode(u)
 
-	fmt.Println("GET /posts/", id, p)
+	fmt.Println("GET /users/", id, u)
 }
 
-func handleDeletePost(w http.ResponseWriter, r *http.Request, id int) {
+func handleDeleteUser(w http.ResponseWriter, r *http.Request, id int) {
 
-	postsMu.Lock()
-	defer postsMu.Unlock()
+	usersMu.Lock()
+	defer usersMu.Unlock()
 
-	if _, ok := posts[id]; !ok {
-		http.Error(w, "Post not found", http.StatusNotFound)
+	if _, ok := users[id]; !ok {
+		http.Error(w, "User not found", http.StatusNotFound)
 		return
 	}
 
-	delete(posts, id)
+	delete(users, id)
 	w.WriteHeader(http.StatusNoContent)
 
-	fmt.Println("DELETE /posts/", id)
+	fmt.Println("DELETE /users/", id)
 }
